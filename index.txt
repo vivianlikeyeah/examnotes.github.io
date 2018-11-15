@@ -1,0 +1,72 @@
+<!-- The following page is the home page for the BIOM9450 Tutorial 4 Task -->
+<!-- Written by z5062431 August 2018 --> 
+<html>
+
+<?php
+
+session_start();
+
+if (empty($_SESSION['errormessage'])){
+$_SESSION['errormessage'] = ""; 
+}
+
+?>
+<head>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<title>Fall Prevention</title>
+<body>
+
+
+
+
+	<div class="header">
+  	<a href="index.php" class="logo">Fall Prevention</a>
+  	<div class="header-right">
+    <a class = "active" href="index.php">Home</a>
+    <a href="newpage.html">User</a>
+  	</div>
+	</div>
+	
+
+	<div class = "content">
+	
+
+	<!-- The following is the login form --> 
+	
+	<div class = "login">
+	 <form name="Login" action="registered.php" method = "POST">
+	 <p id = "invalid" style = "color: red"> <?php echo $_SESSION['errormessage'] ?> </p>
+	 <label >User ID</label> <br>
+	 <input type="text" id="uname" name="uname" placeholder="Enter your user ID"> <br>
+	 <label> Password </label> <br>
+	 <input type = "password" placeholder = "Enter your password" id="password"name = "password">
+	 <input type="submit" value="Login">
+	
+	</form>
+	</div>
+	<!-- End of login form --> 
+	
+
+	</div>
+	
+	<div class = "footer">
+	<div class = "footertext"> Website created by Vivian Bakiris 2018 </div>
+	</div>
+	
+
+	<script>
+	
+		function jsfunction(){
+
+			document.getElementById("invalid").innerHTML = "invalid login attempt";
+		}
+
+		
+	
+	</script>
+
+
+
+</body>
+</html>

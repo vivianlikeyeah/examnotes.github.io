@@ -1,0 +1,185 @@
+
+<!-- Written by z5062431 October 2018 --> 
+<html>
+
+<?php
+
+session_start();
+
+//The following code checks that the appropriate user type is logged in. If not, it redirects them to their appropriate homepage. 
+
+if($_SESSION['log'] == false){
+		
+		header('Location: index.php'); 
+		exit; 
+	
+}
+
+	if ($_SESSION['log'] == true && $_SESSION['userType'] == "exo"){
+		
+	header('Location: oops.php?arows='.$arows);
+	exit; 
+	
+}
+else if ($_SESSION['log'] == true && $_SESSION['userType'] == "admin"){
+	
+	//header('Location: administrator.php'); 
+	//exit; 
+}
+
+	else if ($_SESSION['log'] == true && $_SESSION['userType'] == "patient"){
+	
+	header('Location: patient.php'); 
+	exit; 
+}
+
+else if ($_SESSION['log'] == true && $_SESSION['userType'] == "practitioner"){
+	
+	header('Location: practitioner.php'); 
+	exit; 
+}
+
+else{
+	header('Location: oops.php?usertype=' .$_SESSION['userType']);
+	exit; 
+}
+
+?>
+
+<script type="text/javascript" src="functions.js"> </script>
+
+
+<head>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+
+<title>Fall Prevention</title>
+<body>
+
+	<!-- The header --> 
+	<div class="header">
+		<a href="index.php" class="logo">Fall Prevention</a>
+		<div class="header-right">
+			<a href="administrator.php">Home</a>
+			<a onclick = "logout()">Logout</a>
+		</div>
+	</div>
+	<!-- end of header --> 
+	
+	<!-- Start of side navigation menu --> 
+		<div class = "content">
+			<div id="mySidenav" class="sidenav">
+				<a href="javascript:void(0)" class="closebtn" onclick="closeNav()"> Tools &times;</a>
+				<a href="adminsearch.php">Search Patients</a>
+				<a href = "addpractitioners.php"> Add Practitioners </a>
+				<a href="adminsearch2.php">Search Practitioners</a>
+				<a href = "prac2patient.php"> Manage Connections </a> 
+			</div>
+	<!-- End of side navigation menu --> 
+
+	<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+	
+
+	<!-- The following is the login form --> 
+	
+	<div class = "addpatient">
+		<form name="addpatient" method = "POST">
+			<p id = "invalid"></p>
+			Add Practitioner <br> <br>
+			<label >First Name </label> <p id="firstNameInvalid"></p>
+			<input type="text" onChange = "validateFirstName()" id="uname" name="uname" placeholder="Modify First Name" style="width:70%;">
+			<br>
+	 
+
+			<label> Surname </label> <br>  <p id="surnameInvalid"></p>
+			<input type = "text" placeholder = "Enter the patient's surname" id="surname"name = "surname" onChange = "validateSurname()">
+	 
+			<label> Set Password </label>  <p id="passwordInvalid"></p>
+			<input type = "password" placeholder = "Set Patient Password" id="password"name = "password" onChange = "validatePassword()">
+	
+			<label> Confirm Password </label>  <p id="secondPasswordInvalid"></p>
+			<input type = "password" placeholder = "Set Patient Password" id="secondPassword"name = "secondPassword" onChange = "validateSecondPassword()">
+
+	 
+
+	 
+			<input type="submit" value="Add New Practitioner" onClick="return validate()"> <input type="reset">
+	
+		</form>
+	</div>
+	<!-- End of login form --> 
+	
+
+	</div>
+	<!-- End of content --> 
+	
+	<!-- Start of Footer --> 
+	<div class = "footer">
+		<div class = "footertext"> Website created by Vivian Bakiris 2018 </div>
+	</div>
+	<!-- End of Footer --> 
+	
+
+	<script>
+	
+		function jsfunction(){
+
+			document.getElementById("invalid").innerHTML = "invalid login attempt";
+		}
+
+		
+	
+	</script>
+
+<?php
+
+if(!empty($_POST)){
+	
+	//Get all the variables from the form 
+	$firstname = $_POST['uname'];
+	$lastname = $_POST['surname'];
+	$password = $_POST['password']; 
+
+
+	$conn = odbc_connect('z5062431', '', '',SQL_CUR_USE_ODBC);
+		
+		
+	// Check connection
+	if(!$conn){
+		exit('Connection Failed:</br>');
+	}
+
+	//Insert the new practitioner  as a user 
+	$insertUser = "Insert INTO User (FirstName, LastName, Password) VALUES ('$firstname', '$lastname', '$password');";
+
+	$steptwo = odbc_exec($conn, $insertUser); 
+
+	//Get the practitioners new user ID 
+
+	$getIDUser = "SELECT @@IDENTITY;";
+
+	$giveUser = odbc_exec($conn, $getIDUser); 
+
+
+
+	while(odbc_fetch_row($giveUser)){
+			
+		$UserID = odbc_result($giveUser, 1);
+
+	}
+
+	//Insert the new practitoiner into the practitoiner database 
+	$insertPractitioner = "INSERT INTO Practitioner (UserID) VALUES ('$UserID')";  
+
+	$stepthree = odbc_exec($conn, $insertPractitioner); 
+
+
+
+}
+
+
+?>
+
+</body>
+</html>

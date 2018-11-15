@@ -1,0 +1,148 @@
+/* Image tag is formatted to be suitable as a company logo */
+img {
+  width: 100px;
+  height: 100px;
+  background: #555;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+
+}
+/* Heading one has been modified to align center and be grey*/
+ h1 {
+  position: relative;
+  top: 18px;
+  left: 10px;
+}
+
+/* Heading two has been modified */
+h2{
+	text-align: center;
+}
+
+/* Heading three has been modified */
+h3{
+	text-align: center;
+}
+
+
+h4{
+  text-align: center;
+}
+
+table{
+	margin: auto;
+}
+
+form{
+  padding-left: 25%;
+}
+
+/* The following code formats the style of the contents table and its respective elements*/
+#Contents {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 80%;
+    font-size: 20px;
+    text-align: center;
+}
+
+
+#Contents th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: #4286f4;
+    color: white;
+}
+
+#Contents td{
+	color: grey;
+
+}
+#Contents tr:hover{
+	background-color:#4286f4;
+	color:white;
+}
+#Contents td:hover{
+	background-color:#4286f4;
+	color:white;
+}
+/* The following code formats the href links */
+
+a[href="icd-10-am.html"]{
+	color:grey;
+}
+
+a[href="icd-10-am.html"]:hover{
+	color:white;
+}
+
+a[href="hl7.html"]{
+	color:grey;
+}
+
+
+a[href="hl7.html"]:hover{
+	color:white;
+}
+
+a[href="advertisement.html"]{
+	color:grey;
+	text-align: center;
+}
+
+body { 
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Header formatting */ 
+
+.header {
+  overflow: hidden;
+  background-color: #f1f1f1;
+  padding: 20px 10px;
+}
+
+.header a {
+  float: left;
+  color: black;
+  text-align: center;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 18px; 
+  line-height: 25px;
+  border-radius: 4px;
+}
+
+.header a.logo {
+  font-size: 25px;
+  font-weight: bold;
+  color: #4286f4 ;
+}
+
+.header a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.header a.active {
+  background-color: #4286f4;
+  color: white;
+}
+
+.header-right {
+  float: right;
+}
+
+/* Form Formatting */
+
+input {
+    width: 65%;
+    height: 5%;
+    border-radius: 8px;
+}
+
+input[type=checkbox] {
+  width: 1%;
+}

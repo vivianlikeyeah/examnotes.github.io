@@ -1,0 +1,295 @@
+<html>
+
+<head>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<title>Fall Prevention</title>
+
+<?php
+session_start(); 
+
+	if($_SESSION['log'] == false){
+			
+			header('Location: index.php'); 
+			exit; 
+		
+	}
+	
+		if ($_SESSION['log'] == true && $_SESSION['userType'] == "exo"){
+			
+		header('Location: oops.php?arows='.$arows);
+		exit; 
+		
+	}
+	else if ($_SESSION['log'] == true && $_SESSION['userType'] == "admin"){
+		
+		header('Location: administrator.php'); 
+		exit; 
+	}
+	
+		else if ($_SESSION['log'] == true && $_SESSION['userType'] == "patient"){
+		
+		header('Location: patient.php'); 
+		exit; 
+	}
+	
+	else if ($_SESSION['log'] == true && $_SESSION['userType'] == "practitioner"){
+		
+		//header('Location: practitioner.php'); 
+		//exit; 
+	}
+	
+	else{
+		header('Location: oops.php?usertype=' .$_SESSION['userType']);
+		exit; 
+	}
+
+	
+	
+?>
+
+
+<script type="text/javascript" src="functions.js"> </script>
+
+<body>
+
+<?php
+
+
+if(empty($_GET['patientID'])){
+
+	header('Location: pracsearch.php'); 
+	exit; 
+}
+else{
+	$patientID = $_GET['patientID']; 
+	$conn = odbc_connect('z5062431', '', '',SQL_CUR_USE_ODBC);
+				if(!$conn){
+					exit('Connection Failed:</br>');
+				}
+							
+			
+				$findPatientDetailsQuery = "SELECT * FROM Patient WHERE SubjectID =" . $patientID . ";"; 
+				
+				$findPatientDetails = odbc_exec($conn, $findPatientDetailsQuery);
+
+				if(empty($findPatientDetails)){	
+					header('pracsearch.php'); 
+				}
+				
+				while(odbc_fetch_row($findPatientDetails)){
+					$FirstName = odbc_result($findPatientDetails, 'FirstName'); 
+					$LastName = odbc_result($findPatientDetails, 'LastName'); 
+					$Sex = odbc_result($findPatientDetails, 'Sex');
+					$DOB = odbc_result($findPatientDetails, 'DOB');
+	
+				}
+
+				
+				$findTrialDataQuery = "SELECT * FROM TrialData WHERE PatientID=" .$patientID . ";"; 
+				
+				$findTrial = odbc_exec($conn, $findTrialDataQuery);
+				
+				while(odbc_fetch_row($findTrial)){
+					$TrialData = odbc_result($findTrial, 'TrialData');
+					
+				}
+				
+				if(empty($TrialData)){
+					
+						$TrialData = "No Value"; 
+				}
+				
+
+				
+				
+
+	
+}
+
+?>
+
+<script type="text/javascript" src="functions.js">
+
+
+</script>
+
+	<div class="header">
+  	<a href="index.php" class="logo">Fall Prevention Admin Portal</a>
+  	<div class="header-right">
+    <a href="practitioner.php">Home</a>
+    <a onclick = "logout()">Logout</a>
+  	</div>
+	</div>
+	
+	
+	
+	<!-- End Header-->
+	
+	
+		<div class = "content">
+		<div id="mySidenav" class="sidenav">
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()"> Tools &times;</a>
+		<a href="pracsearch.php">Search</a>
+		<a href = "addpatients.php"> Add Patients </a>
+		</div>
+		
+	<div class = "editpatient">
+	 <form name="changefirstname" method = "POST">
+	 <p id = "invalid"></p>
+	 
+	 Edit the patient data for patient <?php echo $patientID; ?> <br> <br>
+	 <label ><?php echo $FirstName; ?></label> <p id="firstNameInvalid"></p> <br>
+	 <input type="text" onChange = "validateFirstName()" id="uname" name="uname" placeholder="Modify First Name" style="width:70%;">
+	 <input type="submit" value="Modify First Name" style="width:25%;" name="one" onclick="return validateFirstName();">
+	 </form>
+	 
+	 <form name="changelastname" method = "POST">
+	 <label> <?php echo $LastName; ?> </label> <p id="surnameInvalid"></p>  <br>
+	 <input type = "text" onChange = "validateSurname()" placeholder = "Enter the patient's surname" id="surname"name = "surname" style="width:70%;">
+	  <input type="submit" value="Modify Surname" style="width:25%;" name ="two" onClick="return validateSurname();">
+
+	 </form>
+	 
+	 
+	 
+	 <form name="changesex" method = "POST">
+	 <label> <?php echo $Sex; ?></label> <br>
+	 <select name="sex" id="sex" style="width:70%;">
+	 <option value="f">Female</option>
+     <option value="m">Male</option>
+     <option value="o">Other</option>
+	 </select>
+	  <input type="submit" value="Modify Sex" style="width:25%;" name = "three">
+	 </form>
+	 
+	 
+
+	 <form name="changebirthday" method = "POST">
+	 <label> <?php echo $DOB; ?> </label> <p id="DOBInvalid"></p> <br>
+	  <input type="date" name="bday" id="bday" style="width:70%;" onChange = "validateDOB()">
+	  <input type="submit" value="Modify ID" style="width:25%;" name = "six" onClick = "validateDOB()">
+	  </form>
+	  
+	  
+	  <form name="changedescription" method = "POST">
+	  
+	  
+	  	 <form name="modifytrial" method = "POST">
+	 <label> <?php echo $TrialData; ?> </label> <p id="trialDataInvalid"></p>
+	 <input type = "float" placeholder = "Enter Trial Data" id="trialdata"name = "trialdata" style="width:70%;" onChange = "validateFallData()">
+	  <input type="submit" value="Modify Trial" style="width:25%;" name ="seven" onClick = "validateFallData()">
+
+	 </form>
+	  
+	  </form>
+	  
+	  <form name="deleteUser" method = "POST">
+	  
+	  <input type="submit" value="Delete User" style="width:100%; background-color: red;" name = "eight">
+	  
+	  </form>
+	  
+	  
+
+
+	</div>
+
+		<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+		
+	
+
+		</div>
+
+		
+		
+	
+	<div class = "footer">
+	<div class = "footertext"> Website creatd by Vivian Bakiris 2018 </div>
+	</div>
+	
+<?php
+
+$conn = odbc_connect('z5062431', '', '',SQL_CUR_USE_ODBC);
+	if(!$conn){
+		exit('Connection Failed:</br>');
+	}
+
+if(!empty($_POST['one'])){
+$firstname = $_POST['uname'];
+
+$insertFirstName = "UPDATE Patient SET FirstName ='".$firstname."' WHERE SubjectID = " . $patientID .";"; 
+odbc_exec($conn, $insertFirstName); 
+//echo $firstname; 
+header("Refresh:0");
+
+}
+if(!empty($_POST['two'])){
+
+$lastname = $_POST['surname']; 	
+$insertsurname = "UPDATE Patient SET LastName ='".$lastname."' WHERE SubjectID = " . $patientID .";"; 
+odbc_exec($conn, $insertsurname); 
+header("Refresh:0");
+	
+}
+
+if(!empty($_POST['three'])){
+	$sex = $_POST['sex']; 
+	$insertSex = "UPDATE Patient SET Sex ='".$sex."' WHERE SubjectID = " . $patientID .";"; 
+	odbc_exec($conn, $insertSex); 
+	header("Refresh: 0"); 
+
+}
+
+
+
+if(!empty($_POST['six'])){
+	
+	$bday = $_POST['bday']; 
+	$insertBday = "UPDATE Patient SET DOB ='".$bday."' WHERE SubjectID = " . $patientID .";"; 
+	odbc_exec($conn, $insertBday);
+	header("Refresh: 0"); 
+	
+}
+if(!empty($_POST['seven'])){
+	
+	$trialdatanew = $_POST['trialdata']; 
+	$inserttral = "UPDATE TrialData SET TrialData ='".$trialdatanew."' WHERE PatientID = " . $patientID .";"; 
+	odbc_exec($conn, $trialdatanew);
+	header("Refresh: 0"); 
+	
+	
+	
+}
+
+if(!empty($_POST['eight'])){
+	
+	$sql3 = "DELETE FROM PractitionerPatients WHERE PatientID =".$patientID.";"; 
+	
+	odbc_exec($conn, $sql3);
+	
+	$sql2 = "DELETE FROM TrialData WHERE PatientID =".$patientID.";"; 
+	
+	odbc_exec($conn, $sql2); 
+	
+	$sql = "DELETE FROM Patient WHERE SubjectID=".$patientID . ";";
+	
+	odbc_exec($conn, $sql); 
+	
+	header("Location: pracsearch.php"); 
+
+	
+	
+}
+
+
+
+
+
+
+?> 
+
+
+</body>
+
+</html>

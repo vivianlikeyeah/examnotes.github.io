@@ -1,0 +1,201 @@
+<html>
+
+<head>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<title>Fall Prevention</title>
+
+
+
+
+<?php
+session_start(); 
+	if($_SESSION['log'] == false){
+			
+			header('Location: index.php'); 
+			exit; 
+		
+	}
+		if ($_SESSION['log'] == true && $_SESSION['userType'] == "exo"){
+			
+		header('Location: oops.php?arows='.$arows);
+		exit; 
+		
+	}
+	else if ($_SESSION['log'] == true && $_SESSION['userType'] == "admin"){
+		
+		//If the user is logged in and is an admin they can stay.  
+	}
+	
+		else if ($_SESSION['log'] == true && $_SESSION['userType'] == "patient"){
+		
+		header('Location: patient.php'); 
+		exit; 
+	}
+	
+	else if ($_SESSION['log'] == true && $_SESSION['userType'] == "practitioner"){
+		
+		header('Location: practitioner.php'); 
+		exit; 
+	}
+	
+	else{
+		header('Location: oops.php?usertype=' .$_SESSION['userType']);
+		exit; 
+	}
+	
+	
+	$getPatientData = " SELECT TrialData.PatientID, TrialData.TrialData, Patient.DOB
+	FROM Patient INNER JOIN TrialData ON Patient.[SubjectID] = TrialData.[PatientID] ORDER BY Patient.DOB;";
+	
+	$conn = odbc_connect('z5062431', '', '',SQL_CUR_USE_ODBC);
+	
+	
+	// Check connection
+	if(!$conn){
+		exit('Connection Failed:</br>');
+	}
+	
+	$trialInfo = odbc_exec($conn, $getPatientData); 
+	
+	$patientDataArray = array();
+	$patientDOBS = array(); 
+	
+	while(odbc_fetch_row($trialInfo)){
+		
+		$Patient = odbc_result($trialInfo, 1);
+		$PatientData = odbc_result($trialInfo, 2);
+		$PatientDOB = odbc_result($trialInfo, 3);
+		
+
+		//echo $PatientData; 
+		//echo "<br>"; 
+		
+		$today = date('Y-m-d'); 
+		
+		$createDate = new DateTime($PatientDOB);
+		$strip = $createDate->format('Y-m-d');
+		
+		if ($today < $strip){
+				
+			continue; 
+			
+		}
+		array_push($patientDOBS, $strip); 
+		
+		
+		
+		array_push($patientDataArray, $PatientData);
+		//echo $PatientDOB;
+		//echo "<br>"; 
+		
+		
+		
+	}
+	
+
+
+?>
+
+<body>
+
+
+
+
+	<div class="header">
+  	<a href="index.php" class="logo">Fall Prevention Administrator Portal</a>
+  	<div class="header-right">
+    <a href="administrator.php" class = "active" >Home</a>
+    <a onclick = "logout()">Logout</a>
+  	</div>
+	</div>
+	
+	<script type="text/javascript" src="functions.js"> </script>
+	
+	
+	
+	<!-- End Header-->
+	
+	
+		<div class = "content">
+		<div id="mySidenav" class="sidenav">
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()"> Tools &times;</a>
+		<a href="adminsearch.php">Search Patients</a>
+		<a href = "addpractitioners.php"> Add Practitioners </a>
+		<a href="adminsearch2.php">Search Practitioners</a>
+		<a href = "prac2patient.php"> Manage Connections </a>
+		
+	</div>
+
+
+		<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+		<h1> Welcome, <?php echo $_SESSION['firstname']; ?>! </h1>
+	
+		<?php
+	
+		// Includes for Charting
+		//This is the relative path to the TeeChart directory
+	    require_once("sources/libTeeChart.php"); 
+	
+		//Set up chart
+		$chart1 = new TChart(640,480);
+		$chart1->getAspect()->setView3D(false);
+		$chart1->getHeader()->setText("All Patient Fall Data");
+		$chart1->getLegend()->setVisible(FALSE);
+		
+		$varname = new Line($chart1->getChart()); 
+		
+    	//$someYValues = array(2,3,5,7,11,13);
+		//$theXValues = array(-3,-1,1,3,4,5);
+		
+		$theXValues = $patientDataArray;
+	  $someYValues = $patientDOBS;
+		
+		$i=0;
+		foreach($someYValues as $x){
+			$varname->addXY(2018-$someYValues[$i], $theXValues[$i]);
+			//echo "adding " . $someYValues[$i] . " and " . $theXValues[$i]; 
+			$i++;
+		}
+		
+	    $varname->Setcolor(new Color(177,156,217)); 
+		$chart1->getAxes()->getBottom()->getTitle()->setText(" Year of birth "); 
+		$chart1->getAxes()->getLeft()->getTitle()->setText(" Falls Risk Value"); 
+		$chart1->getAxes()->getLeft()->getLabels()->setFrac_digits(2);
+		$chart1->getPanel()->getGradient()->setVisible(false);
+		$chart1->getPanel()->setColor(Color::WHITE());
+		$chart1->getWalls()->getBack()->setTransparent(true);
+
+		$chart1->render("ecg.png");	
+	
+	?>
+	
+	<img src="ecg.png" style="border: 1px solid gray;"/>
+		
+		
+	
+
+	</div>
+	
+	<div class = "footer">
+	<div class = "footertext"> Website creatd by Vivian Bakiris 2018 </div>
+	</div>
+	
+	
+
+
+</body>
+
+<script>
+
+function logout(){
+
+
+return document.location='logout.php';
+	
+}
+
+
+</script>
+
+</html>

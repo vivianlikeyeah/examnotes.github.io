@@ -1,0 +1,303 @@
+<!-- The following page is the home page for the BIOM9450 Tutorial 4 Task -->
+<!-- Written by z5062431 August 2018 --> 
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<title>A fictitious book </title>
+<body>
+
+	<div class="header">
+  	<a href="index.html" class="logo">Vivian's Scientific Book Publishing</a>
+  	<div class="header-right">
+    <a class = "active" href="index.html">Home</a>
+    <a href="contact.html">Contact</a>
+    <a href="about.html">About</a>
+  	</div>
+	</div>
+
+	<!-- A link to a page advertising a new book --> 
+	<h2> What's new? </h2>
+	<h3> <a href="advertisement.html">New Book!</a></h3> 
+
+	<!-- The following is the login form --> 
+	
+	<form name="Login" action="registered2.php" method = "POST">
+		Login Details <br><br> 
+	 	Email:<br>
+	  	<input type="text" name="email" id="email" onChange="validateEmail()"> 
+	  	<p id="emailInvalid"></p>
+	  	<br>
+	 	Password<br>
+	  	<input type="password" name="password" id="password" onChange="validatePassword()">
+	  	<br>
+	  	<p id="passwordInvalid"></p><br>
+	  	Re-enter Password<br>
+	  	<input type="password" name="secondPassword" id="secondPassword" onChange="validateSecondPassword()">
+	  	<p id="secondPasswordInvalid"></p> <br><br>
+
+		User Details <br>
+
+	 	First Name <br>
+	 	<input type="text" name="firstName" id="firstName" onChange="validateFirstName()">
+	 	<p id="firstNameInvalid"></p> 
+	 	<br>
+
+	 	Last Name<br>
+	 	<input type="text" name="lastName" id="lastName" onChange="validateLastName()">
+	 	<p id="lastNameInvalid"></p> 
+	 	<br>
+	 	DOB(dd/mm/yyyy)<br>
+	 	<input type="date" name="DOB" id="DOB" onChange="validateDOB()"> <p id="DOBInvalid"></p><br>
+
+	 	Gender <br>
+	 	<select name="gender" id="gender">
+		    <option value="female">Female</option>
+		    <option value="male">Male</option>
+		    <option value="other">Other</option>
+		    <option value="prefer">Prefer not to disclose</option>
+		</select> <br>
+
+		<input type="checkbox" id ="marketing" name="marketingmaterial"> <label for="marketing">I want to receieve marketing material</label> <br>
+
+	  	<input type="submit" value="Submit" onclick="return validate();">
+	</form> 
+	<!-- End login form  -->
+
+
+	<script>
+
+		// Validate Email Address Function 
+		function validateEmail(){
+			var email = document.getElementById('email').value;
+			//The following regex matches a phrase that starts number of a-z,A-Z,0-9, . - _ followed by an @ symbol, then it must end with a . followed by 2-4 characters a-z A-Z
+       		var patt = /^[a-z A-Z 0-9 \. \-\_]*@[a-z A-Z 0-9 \. \-]*\.[a-z A-Z]{2,4}$/i;
+    		var result = email.match(patt);
+    		if (result == null){
+
+    			document.getElementById("emailInvalid").style.color="red";
+				document.getElementById("emailInvalid").innerHTML = "invalid email address";
+				document.getElementById("email").style.border="2px solid red";
+
+				return false; 	
+    		}
+			else{
+
+    			document.getElementById("emailInvalid").style.color="green";
+				document.getElementById("emailInvalid").innerHTML = "valid email";
+				document.getElementById("email").style.border="2px solid green";
+    			return true; 
+			}
+
+		}
+
+		/* The following ensures the password is greater 8 characters in length
+		and contains one capital, one lowercase and one number */ 
+
+		function validatePassword(){
+			var password = document.getElementById('password').value;
+			/* Matches for an lowercase letter */ 
+			var lowercase = /[a-z]/;
+			/* Matches for an upper case letter */ 
+			var uppercase = /[A-Z]/;
+			/* Matchers for a number */ 
+			var number = /[0-9]/;
+
+			var resultLower = password.match(lowercase);
+			var resultUpper = password.match(uppercase);
+			var resultNumber = password.match(number); 
+
+			validateSecondPassword(); 
+
+
+			/* If the pattern matched a number, uppercase letter, lowercase letter and was greater than 7 characters in length*/ 
+    		if (password.length > 7 && resultNumber && resultUpper && resultLower){
+    			document.getElementById("passwordInvalid").style.color = "green";
+				document.getElementById("passwordInvalid").innerHTML = "Valid Password";
+				document.getElementById("password").style.border="2px solid green";
+				return true; 	
+    		}
+			else{
+				document.getElementById("passwordInvalid").style.color="red";
+    			document.getElementById("passwordInvalid").innerHTML = "Password length must be greater than 8 characters, contain one uppercase, one lowercase and one number";
+    			document.getElementById("password").style.border="2px solid red";
+    			return false; 	
+			}
+		}
+
+		/* The following ensures the dob added is in a valid format and is reasonable */ 
+
+		function validateDOB(){
+
+			var DOB = new Date(document.getElementById('DOB').value);
+
+			var current = new Date();
+			var elderly = new Date("01/01/1900")
+
+			/* 
+			var patt = /^[0-3][0-9]\/[0-1][0-9]\/([1][9]|[2][0])([0-9][0-9])$/;
+
+			var result = DOB.match(patt);
+
+			if(result==null){
+				document.getElementById("DOBInvalid").style.color = "red"
+				document.getElementById("DOBInvalid").innerHTML = "Date of Birth invalid.";
+				document.getElementById("DOB").style.border = "2px solid red";
+
+				return false; 
+			}
+			else{
+				document.getElementById("DOBInvalid").style.color = "green"
+				document.getElementById("DOBInvalid").innerHTML = "Valid Date of Birth";
+				document.getElementById("DOB").style.border = "2px solid green";
+				return true;
+			}
+			*/ 
+
+			if (DOB > current){
+
+				document.getElementById("DOBInvalid").style.color = "red"
+				document.getElementById("DOBInvalid").innerHTML = "Date of Birth invalid.";
+				document.getElementById("DOB").style.border = "2px solid red";
+				return false; 
+
+			}
+
+			else if ( DOB < elderly) {
+
+				document.getElementById("DOBInvalid").style.color = "red"
+				document.getElementById("DOBInvalid").innerHTML = "Date of Birth invalid.";
+				document.getElementById("DOB").style.border = "2px solid red";
+				return false; 
+
+
+			}
+
+			else{
+
+				document.getElementById("DOBInvalid").style.color = "green"
+				document.getElementById("DOBInvalid").innerHTML = "Valid Date of Birth";
+				document.getElementById("DOB").style.border = "2px solid green";
+				return true;
+
+			}
+
+		}
+
+		/* The following function confirms that the re-entered password matches
+		the original password */ 
+
+		function validateSecondPassword(){
+			firstPassword = document.getElementById("password").value;
+			secondPassword = document.getElementById("secondPassword").value;
+
+			if(firstPassword == secondPassword){
+				document.getElementById("secondPassword").style.color = "green";
+				document.getElementById("secondPasswordInvalid").innerHTML = "Passwords match";
+				document.getElementById("secondPassword").style.border = "2px solid green";
+				return true;
+			}
+			else{
+				document.getElementById("secondPassword").style.color = "red";
+				document.getElementById("secondPasswordInvalid").innerHTML = "Passwords don't match";
+				document.getElementById("secondPassword").style.border = "2px solid red";
+			return false; 
+			}
+
+		}
+
+		/* The following function ensures that the name provided by a user only contains [a-z] characters, apostrophes, and hyphens */ 
+
+		function validateFirstName(){
+
+			name = document.getElementById("firstName").value; 
+    		var patt = /^[a-z A-Z\ \' \-]+$/i;
+    		var result = name.match(patt);
+    		if (result == null){
+
+    			document.getElementById("firstNameInvalid").style.color="red";
+				document.getElementById("firstNameInvalid").innerHTML = "invalid name";
+				document.getElementById("firstName").style.border="2px solid red";
+
+				return false; 	
+    		}
+			else{
+
+    			document.getElementById("firstNameInvalid").style.color="green";
+				document.getElementById("firstNameInvalid").innerHTML = "valid name";
+				document.getElementById("firstName").style.border="2px solid green";
+    			return true; 
+			}
+
+
+		}
+
+		/* The following function ensures that the name provided by a user only contains [a-z] characters, apostrophes, and hyphens */ 
+
+		function validateLastName(){
+
+			name = document.getElementById("lastName").value; 
+    		var patt = /^[a-z A-Z\ \' \-]+$/i;
+    		var result = name.match(patt);
+    		if (result == null){
+
+    			document.getElementById("lastNameInvalid").style.color="red";
+				document.getElementById("lastNameInvalid").innerHTML = "invalid name";
+				document.getElementById("lastName").style.border="2px solid red";
+
+				return false; 	
+    		}
+			else{
+
+    			document.getElementById("lastNameInvalid").style.color="green";
+				document.getElementById("lastNameInvalid").innerHTML = "valid name";
+				document.getElementById("lastName").style.border="2px solid green";
+    			return true; 
+			}
+
+
+		}
+
+
+
+		/* The following function ensures all other validation functions return true
+		before submitting the form */ 
+
+		function validate(){
+			var result = true; 
+			var dob = validateDOB();
+			var password = validatePassword();
+			var email = validateEmail();
+			var firstName = validateFirstName();
+			var lastName = validateLastName(); 
+
+			if (dob == false){
+				result = false;
+			}
+
+			if (password == false){
+				result = false;
+			}
+
+			if (email == false){
+				result = false; 
+			}
+			if (firstName == false){
+				result = false; 
+			}
+			if(lastName == false){
+				result = false; 
+			}
+
+			if (result == false){
+				alert("You've missed out on some stuff, or some of your details are invalid.")
+			}
+			return result;
+			}
+	
+	</script>
+
+
+
+</body>
+</html>

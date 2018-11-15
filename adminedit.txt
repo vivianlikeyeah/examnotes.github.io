@@ -1,0 +1,206 @@
+<!-- Written by z5062431 October 2018 --> 
+<html>
+
+<head>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<title>Fall Prevention</title>
+
+<?php
+session_start(); 
+
+	//The following code checks that the appropriate user type is logged in. If not, it redirects them to their appropriate homepage. 
+
+	if($_SESSION['log'] == false){
+			
+			header('Location: index.php'); 
+			exit; 
+		
+	}
+	
+		if ($_SESSION['log'] == true && $_SESSION['userType'] == "exo"){
+			
+		header('Location: oops.php?arows='.$arows);
+		exit; 
+		
+	}
+	else if ($_SESSION['log'] == true && $_SESSION['userType'] == "admin"){
+		
+		//header('Location: administrator.php'); 
+		//exit; 
+	}
+	
+		else if ($_SESSION['log'] == true && $_SESSION['userType'] == "patient"){
+		
+		header('Location: patient.php'); 
+		exit; 
+	}
+	
+	else if ($_SESSION['log'] == true && $_SESSION['userType'] == "practitioner"){
+		
+		header('Location: practitioner.php'); 
+		exit; 
+	}
+	
+	else{
+		header('Location: oops.php?usertype=' .$_SESSION['userType']);
+		exit; 
+	}
+
+	
+	
+?>
+
+
+
+<script type="text/javascript" src="functions.js">
+
+
+</script>
+
+<body>
+
+<?php
+
+$conn = odbc_connect('z5062431', '', '',SQL_CUR_USE_ODBC);
+	if(!$conn){
+		exit('Connection Failed:</br>');
+	}
+
+
+if(empty($_GET['pracID'])){
+
+	header('Location: adminsearch2.php'); 
+	exit; 
+}
+else{
+$patientID = $_GET['pracID']; 
+
+$queryx = "SELECT * FROM USER WHERE ID =" . $patientID . ";";
+
+$getPrac = odbc_exec($conn, $queryx); 
+
+	while(odbc_fetch_row($getPrac)){
+		
+		$FirstName = odbc_result($getPrac, 'FirstName');
+		$LastName = odbc_result($getPrac, 'LastName');		
+	}
+ 
+	
+}
+
+
+
+?>
+
+
+	<div class="header">
+  	<a href="index.php" class="logo">Fall Prevention Administration Portal</a>
+  	<div class="header-right">
+    <a href="administrator.php" >Home</a>
+    <a onclick = "logout()">Logout</a>
+  	</div>
+	</div>
+	
+	
+	
+	<!-- End Header-->
+	
+	
+	<div class = "content">
+	
+		<!-- Side Navigation Bar --> 
+		<div id="mySidenav" class="sidenav">
+			<a href="javascript:void(0)" class="closebtn" onclick="closeNav()"> Tools &times;</a>
+			<a href="pracsearch.php">Search</a>
+			<a href = "addpatients.php"> Add Patients </a>
+		</div>
+		
+		<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+		
+		<!-- Edit Patient Forms Start --> 
+		
+		<div class = "editpatient">
+		<form name="changefirstname" method = "POST">
+			<p id = "invalid"></p>
+			Edit Practitioner <?php echo $patientID; ?> Data <br> <br>
+			<label ><?php echo $FirstName; ?></label> <p id="firstNameInvalid"></p>
+			<input type="text" onChange = "validateFirstName()" id="uname" name="uname" placeholder="Modify First Name" style="width:70%;">
+			<input type="submit" value="Modify First Name" style="width:25%;" name="one" onclick="return validateFirstName();">
+		 </form>
+		 
+		 <form name="changelastname" method = "POST">
+			<label> <?php echo $LastName; ?> </label> <p id="surnameInvalid"></p> 
+			<input type = "text" onChange = "validateSurname()" placeholder = "Enter the patient's surname" id="surname"name = "surname" style="width:70%;">
+			<input type="submit" value="Modify Surname" style="width:25%;" name ="two" onClick="return validateSurname();">
+
+		 </form>
+		 
+
+
+		 <form name="deletePractitioner" method = "POST">
+			<input type="submit" value="Delete Practitioner" style="width:100%; background-color: red;" name = "eight">
+		  
+		 </form>
+		  
+		  
+
+
+		</div>
+		
+		<!-- End of all patient edit forms --> 	
+	
+
+		</div>
+
+		
+		
+	
+	<div class = "footer">
+		<div class = "footertext"> Website creatd by Vivian Bakiris 2018 </div>
+	</div>
+	
+<?php
+
+$conn = odbc_connect('z5062431', '', '',SQL_CUR_USE_ODBC);
+	if(!$conn){
+		exit('Connection Failed:</br>');
+	}
+
+if(!empty($_POST['one'])){
+$firstname = $_POST['uname'];
+
+$insertFirstName = "UPDATE USER SET FirstName ='".$firstname."' WHERE ID = " . $patientID .";"; 
+odbc_exec($conn, $insertFirstName);  
+header("Refresh:0");
+
+}
+if(!empty($_POST['two'])){
+
+$lastname = $_POST['surname']; 	
+$insertsurname = "UPDATE User SET LastName ='".$lastname."' WHERE ID = " . $patientID .";"; 
+odbc_exec($conn, $insertsurname); 
+header("Refresh:0");
+	
+}
+
+if(!empty($_POST['seven'])){
+	
+	
+}
+
+if(!empty($_POST['eight'])){
+	
+	
+	header("Refresh: 0"); 
+	
+}
+
+
+
+?> 
+
+
+</body>
+
+</html>

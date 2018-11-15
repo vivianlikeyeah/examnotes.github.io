@@ -1,0 +1,279 @@
+<html>
+
+<head>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<title>Fall Prevention</title>
+
+<?php
+session_start(); 
+
+	if($_SESSION['log'] == false){
+			
+			header('Location: index.php'); 
+			exit; 
+		
+	}
+	
+		if ($_SESSION['log'] == true && $_SESSION['userType'] == "exo"){
+			
+		header('Location: oops.php?arows='.$arows);
+		exit; 
+		
+	}
+	else if ($_SESSION['log'] == true && $_SESSION['userType'] == "admin"){
+		
+		//header('Location: administrator.php'); 
+		//exit; 
+	}
+	
+		else if ($_SESSION['log'] == true && $_SESSION['userType'] == "patient"){
+		
+		header('Location: patient.php'); 
+		exit; 
+	}
+	
+	else if ($_SESSION['log'] == true && $_SESSION['userType'] == "practitioner"){
+		
+		header('Location: practitioner.php'); 
+		exit; 
+	}
+	
+	else{
+		header('Location: oops.php?usertype=' .$_SESSION['userType']);
+		exit; 
+	}
+
+	
+	
+?>
+
+<script type="text/javascript" src="functions.js"> </script>
+
+<body>
+
+
+
+
+	<div class="header">
+  	<a href="index.php" class="logo">Fall Prevention Admin Portal</a>
+  	<div class="header-right">
+    <a href="administrator.php" >Home</a>
+    <a onclick = "logout()">Logout</a>
+  	</div>
+	</div>
+	
+
+	
+	
+	
+	<!-- End Header-->
+	
+	
+		<div class = "content">
+			<div id="mySidenav" class="sidenav">
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()"> Tools &times;</a>
+		<a href="adminsearch.php">Search Patients</a>
+		<a href = "addpractitioners.php"> Add Practitioners </a>
+		<a href="adminsearch2.php">Search Practitioners</a>
+		<a href = "prac2patient.php"> Manage Connections </a> 
+	</div>
+
+
+	<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+		<h1> Searching Patients</h1>
+		
+		<div id="searchbar" class ="searchbar">
+		
+		 <form method= "POST" id='search'>
+		 <input type="text" placeholder="Search.." name="search" id="search">
+		 <button type="submit">Submit</button>
+		 
+		 		
+		<?php
+
+			if(!empty($_POST)){
+				echo"<br>";
+				$conn = odbc_connect('z5062431', '', '',SQL_CUR_USE_ODBC);
+				if(!$conn){
+					exit('Connection Failed:</br>');
+				}
+				
+				
+
+				$findPatientsQuery = "SELECT * FROM Patient;"; 
+				
+				$findPatients = odbc_exec($conn, $findPatientsQuery); 
+				
+				$patientIDs = array(); 
+				
+				while(odbc_fetch_row($findPatients)){
+					
+					$currentPatientID = odbc_result($findPatients, 'SubjectID');
+					array_push($patientIDs, $currentPatientID); 
+				
+				}
+				
+				if(!empty($_POST['search'])){
+					
+					
+				    $searchTerm = $_POST['search']; 
+					
+					$split_words = explode(' ', $searchTerm); 
+					
+					if (count($split_words) > 1){
+							$firstSearch = $split_words[0]; 
+							$secondSearch = $split_words[1]; 
+							$findPatientsQuery2 = "SELECT * FROM Patient WHERE FirstName LIKE '%" . $firstSearch . "%' AND LastName LIKE '%" . $secondSearch ."%';"; 
+					
+							
+					}
+					
+					else{
+					
+					
+						$findPatientsQuery2 = "SELECT * FROM Patient WHERE FirstName LIKE '%" . $searchTerm . "%' OR LastName LIKE '%" . $searchTerm ."%';"; 
+					
+					}
+					$findPatients = odbc_exec($conn, $findPatientsQuery2); 
+				
+					$patientIDs2 = array(); 
+				
+					while(odbc_fetch_row($findPatients)){
+					
+						$currentPatientID = odbc_result($findPatients, 'SubjectID');
+						array_push($patientIDs2, $currentPatientID); 
+					
+					}
+					
+					$patientIDs = array_intersect($patientIDs2, $patientIDs); 
+					
+
+					
+					
+					
+				}
+				
+				
+				
+				echo "<br><br><br><table id = 'searchresults'>
+				<tr>
+					<th> Patient ID </th>
+					<th> First Name </th>
+					<th> Last Name</th>
+					<th> Sex </th>
+			
+				</tr>" ;
+
+				$newIDs = array(); 
+				
+				$count = 0; 
+				for ($q = 0; $q < count($patientIDs); $q++){
+						if(!empty($patientIDs[$count])){
+							array_push($newIDs,$patientIDs[$q]); 
+							$count = $count + 1; 
+						}
+						else{
+							$count = $count + 1; 
+							$q = $q - 2;
+							continue; 
+							
+						 	
+						}
+					
+				}
+
+				$counter =0; 
+				for ($f = 0; $f < count($patientIDs); $f++){
+
+				$currentID = $patientIDs[$f];
+
+				$findPatientDetailsQuery = "SELECT * FROM Patient WHERE SubjectID =" . $currentID . ";"; 
+				
+				$findPatientDetails = odbc_exec($conn, $findPatientDetailsQuery); 
+				
+					while(odbc_fetch_row($findPatientDetails)){
+						$FirstName = odbc_result($findPatientDetails, 'FirstName'); 
+						$LastName = odbc_result($findPatientDetails, 'LastName'); 
+						$Sex = odbc_result($findPatientDetails, 'Sex');
+
+					
+					}
+						echo "<tr>";
+						echo "<td>";
+						echo $currentID;
+						echo"</td>"; 
+						
+						echo "<td>";
+						echo $FirstName;
+						echo"</td>"; 
+						
+						echo "<td>";
+						echo $LastName;
+						echo"</td>";
+						
+						echo "<td>";
+						echo $Sex;
+						echo"</td>"; 
+												
+						echo"</tr>";
+					
+					$counter = $counter + 1; 
+				}
+
+				
+				echo "</table>";
+				
+					
+				unset($trial);
+				unset($x); 
+				
+				
+
+				
+	
+			}
+
+		?> 
+	
+ <!-- <button id="dataview" onClick = "logout()"> View Data </button> 	
+<a onclick = "getData()">Logout</a> --> 
+		 
+	 
+		</div>
+
+
+	</div>
+
+
+	
+	<div class = "footer">
+	<div class = "footertext"> Website creatd by Vivian Bakiris 2018 </div>
+	</div>
+	
+
+
+</body>
+
+
+<script>
+
+function logout(){
+
+return document.location='logout.php';
+	
+}
+
+function getData($patientData){
+$personID = $patientData;
+//$viewpatient = 'viewpatient.php?patientID='.$pa
+return (document.location = 'viewpatient.php?patientID=' + $personID);
+	
+}
+
+
+
+
+
+</script>
+</html>

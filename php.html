@@ -1,0 +1,29 @@
+<html> 
+<header> 
+
+<link rel = "stylesheet" type = "text/css" href = "theme.css">
+
+</header>
+
+<body> 
+<h1> <a href= "practice.html">Vivian's 9450 Study Notes </a></h1> 
+<h2> PHP Notes </h2> 
+	<b>Helpful hints: <br> </b>
+	
+	<code>
+	$conn = odbc_connect('z5062431', '', '',SQL_CUR_USE_ODBC); <br>
+	if(!$conn){<br>
+		exit('Connection Failed:');<br>
+	}<br> </b>
+	$checkPatientQuery = "SELECT * FROM Patient WHERE SubjectID =" .$subjectid . ";"; <br> 
+	$stepone = odbc_exec($conn, $checkPatientQuery); <br>
+	while(odbc_fetch_row($stepone)){<br> 
+		$trialID = odbc_result($stepone, 1);<br>
+
+
+
+	</code>
+
+
+</body>
+</html>

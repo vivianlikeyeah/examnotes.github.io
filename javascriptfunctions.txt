@@ -1,0 +1,286 @@
+function logout(){
+
+return document.location='logout.php';
+	
+}
+
+
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+}
+
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+}
+
+function validateFirstName(){
+
+	name = document.getElementById("uname").value; 
+    var patt = /^[a-z A-Z\ \' \-]+$/i;
+    var result = name.match(patt);
+    if (result == null){
+    	document.getElementById("firstNameInvalid").style.color="red";
+		document.getElementById("firstNameInvalid").innerHTML = "invalid name";
+		document.getElementById("uname").style.border="2px solid red";
+
+	return false; 	
+    }
+	else{
+    	document.getElementById("firstNameInvalid").style.color="green";
+		document.getElementById("firstNameInvalid").innerHTML = "valid name";
+		document.getElementById("uname").style.border="2px solid green";
+    	return true; 
+	}
+
+
+}
+
+function validateSurname(){
+
+	name = document.getElementById("surname").value; 
+    var patt = /^[a-z A-Z\ \' \-]+$/i;
+    var result = name.match(patt);
+    if (result == null){
+    	document.getElementById("surnameInvalid").style.color="red";
+		document.getElementById("surnameInvalid").innerHTML = "invalid name";
+		document.getElementById("surname").style.border="2px solid red";
+
+	return false; 	
+    }
+	else{
+    	document.getElementById("surnameInvalid").style.color="green";
+		document.getElementById("surnameInvalid").innerHTML = "valid name";
+		document.getElementById("surname").style.border="2px solid green";
+    	return true; 
+	}
+
+
+}
+
+function validateFallData(){
+
+	name = document.getElementById("trialdata").value; 
+    var patt = /^[-+]?([0-9]*\.[0-9]+|[0-9]+)$/i;
+    var result = name.match(patt);
+    if (result == null){
+    	document.getElementById("trialDataInvalid").style.color="red";
+		document.getElementById("trialDataInvalid").innerHTML = "Please enter a float";
+		document.getElementById("trialdata").style.border="2px solid red";
+
+	return false; 	
+    }
+	else{
+    	document.getElementById("trialDataInvalid").style.color="green";
+		document.getElementById("trialDataInvalid").innerHTML = "Valid Data Entry";
+		document.getElementById("trialdata").style.border="2px solid green";
+    	return true; 
+	}
+
+
+}
+
+function validateDOB(){
+	
+
+	var DOB = new Date(document.getElementById('bday').value);
+
+	var current = new Date();
+	var elderly = new Date("01/01/1900")
+
+
+	if (DOB > current){
+
+		document.getElementById("DOBInvalid").style.color = "red"
+		document.getElementById("DOBInvalid").innerHTML = "Date of Birth invalid.";
+		document.getElementById("bday").style.border = "2px solid red";
+		return false; 
+
+	}
+
+	else if ( DOB < elderly) {
+
+		document.getElementById("DOBInvalid").style.color = "red"
+		document.getElementById("DOBInvalid").innerHTML = "Date of Birth invalid.";
+		document.getElementById("bday").style.border = "2px solid red";
+		return false; 
+
+
+	}
+	else if (isNaN(DOB) == true){
+		
+			document.getElementById("DOBInvalid").style.color = "red"
+		document.getElementById("DOBInvalid").innerHTML = "Date of Birth invalid.";
+		document.getElementById("bday").style.border = "2px solid red";
+		return false; 
+		
+	}
+
+	else{
+
+		document.getElementById("DOBInvalid").style.color = "green"
+		document.getElementById("DOBInvalid").innerHTML = "Valid Date of Birth";
+		document.getElementById("bday").style.border = "2px solid green";
+		return true;
+
+		}
+
+	}
+	
+		function validatePassword(){
+			var password = document.getElementById('password').value;
+			/* Matches for an lowercase letter */ 
+			var lowercase = /[a-z]/;
+			/* Matches for an upper case letter */ 
+			var uppercase = /[A-Z]/;
+			/* Matchers for a number */ 
+			var number = /[0-9]/;
+
+			var resultLower = password.match(lowercase);
+			var resultUpper = password.match(uppercase);
+			var resultNumber = password.match(number); 
+
+			validateSecondPassword(); 
+
+			/* If the pattern matched a number, uppercase letter, lowercase letter and was greater than 7 characters in length*/ 
+    		if (password.length > 7 && resultNumber && resultUpper && resultLower){
+    			document.getElementById("passwordInvalid").style.color = "green";
+				document.getElementById("passwordInvalid").innerHTML = "Valid Password";
+				document.getElementById("password").style.border="2px solid green";
+				return true; 	
+    		}
+			else{
+				document.getElementById("passwordInvalid").style.color="red";
+    			document.getElementById("passwordInvalid").innerHTML = "Password length must be greater than 8 characters, contain one uppercase, one lowercase and one number";
+    			document.getElementById("password").style.border="2px solid red";
+    			return false; 	
+			}
+		}
+		
+		
+		
+				function validateSecondPassword(){
+			firstPassword = document.getElementById("password").value;
+			secondPassword = document.getElementById("secondPassword").value;
+
+			if(firstPassword == secondPassword){
+				document.getElementById("secondPassword").style.color = "green";
+				document.getElementById("secondPasswordInvalid").innerHTML = "Passwords match";
+				document.getElementById("secondPassword").style.border = "2px solid green";
+				return true;
+			}
+			else{
+				document.getElementById("secondPassword").style.color = "red";
+				document.getElementById("secondPasswordInvalid").innerHTML = "Passwords don't match";
+				document.getElementById("secondPassword").style.border = "2px solid red";
+			return false; 
+			}
+
+		}
+
+	function validate(){
+
+			var result = true; 
+
+			var password = validatePassword();
+			var firstName = validateFirstName();
+			var lastName = validateSurname(); 
+
+
+			if (password == false){
+				result = false;
+			}
+
+			if (firstName == false){
+				result = false; 
+			}
+			if(lastName == false){
+				result = false; 
+			}
+
+			if (result == false){
+				alert("You've missed out on some stuff, or some of your details are invalid.")
+			}
+			return result;
+			}
+	
+	
+	function validateTrialDate(){
+	
+
+	var DOB = new Date(document.getElementById('trialdate').value);
+
+	var current = new Date();
+	var elderly = new Date("01/01/1900")
+
+
+	if (DOB > current){
+
+		document.getElementById("TrialDateInvalid").style.color = "red"
+		document.getElementById("TrialDateInvalid").innerHTML = "Date invalid.";
+		document.getElementById("trialdate").style.border = "2px solid red";
+		return false; 
+
+	}
+
+	else if ( DOB < elderly) {
+
+		document.getElementById("TrialDateInvalid").style.color = "red"
+		document.getElementById("TrialDateInvalid").innerHTML = "Date invalid.";
+		document.getElementById("trialdate").style.border = "2px solid red";
+		return false; 
+
+
+	}
+	else if (isNaN(DOB) == true){
+		
+			document.getElementById("TrialDateInvalid").style.color = "red"
+		document.getElementById("TrialDateInvalid").innerHTML = "Date invalid.";
+		document.getElementById("trialdate").style.border = "2px solid red";
+		return false; 
+		
+	}
+
+	else{
+
+		document.getElementById("TrialDateInvalid").style.color = "green"
+		document.getElementById("TrialDateInvalid").innerHTML = "Valid Date";
+		document.getElementById("trialdate").style.border = "2px solid green";
+		return true;
+
+		}
+
+	}
+	
+	function validatePatientID(){
+		
+			name = document.getElementById("formID").value; 
+			var patt = /^[0-9][0-9][0-9][0-9]$/i;
+			var result = name.match(patt);
+			if (result == null){
+				document.getElementById("formIDInvalid").style.color="red";
+				document.getElementById("formIDInvalid").innerHTML = "Patient ID must be a four digit number";
+				document.getElementById("formID").style.border="2px solid red";
+
+			return false; 	
+		}
+		else{
+			document.getElementById("formIDInvalid").style.color="green";
+			document.getElementById("formIDInvalid").innerHTML = "Valid Format";
+			document.getElementById("formID").style.border="2px solid green";
+			return true; 
+		}
+		
+		
+	}
+
+	function jsfunction(){
+
+			document.getElementById("invalid").innerHTML = "Invalid Details. User ID already registered";
+			document.getElementById("invalid").style.color = "red";
+			
+		}
+
+
+
+
+    

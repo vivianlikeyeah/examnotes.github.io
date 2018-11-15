@@ -1,0 +1,226 @@
+<!-- Written by z5062431 October 2018 --> 
+<html>
+
+<?php
+
+session_start();
+
+
+?>
+
+
+<script type="text/javascript" src="functions.js"> </script>
+
+
+<head>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<title>Fall Prevention</title>
+<body>
+
+
+
+	<!-- Start of Header --> 
+	<div class="header">
+		<a href="index.php" class="logo">Fall Prevention</a>
+		<div class="header-right">
+			<a class = "active" href="practitioner.php">Home</a>
+			<a onclick = "logout()">Logout</a>
+		</div>
+	</div>
+	<!-- End of header --> 
+
+	<div class = "content">
+		<div id="mySidenav" class="sidenav">
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()"> &times;</a>
+		<a href="pracsearch.php">Search</a>
+		<a href = "addpatients.php"> Add Patients </a>
+	</div>
+
+	<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+	
+
+	<!-- The following is the form to add a new patient --> 
+	
+	<div class = "addpatient">
+		<form name="addpatient" method = "POST">
+		<p id = "invalid"></p>
+		Add Patient Data <br> <br>
+	 
+		<label >First Name </label> <p id="firstNameInvalid"></p>
+		<input type="text" onChange = "validateFirstName()" id="uname" name="uname" placeholder="Enter the patient's first name">
+		<br>
+	 
+
+		<label> Surname </label> <p id="surnameInvalid"></p>
+		<input type = "text" placeholder = "Enter the patient's surname" id="surname"name = "surname" onChange = "validateSurname()">
+
+	 
+
+		<label> Enter the patient's sex </label> <br>
+		<select name="sex" id="sex">
+			<option value="f">Female</option>
+			<option value="m">Male</option>
+			<option value="o">Other</option>
+		</select>
+
+	
+		<label> <br>Patient ID </label> <p id="formIDInvalid"></p>
+		<input type = "text" placeholder ="Enter patient ID" id="formID" name = "formID" onChange="validatePatientID()">
+	 
+		<label> True falls rate </label> <p id="trialDataInvalid"></p> 
+		<input type = "text" placeholder = "True Falls Rate" id="trialdata" name = "trialdata" onChange = "validateTrialData()">
+	 
+		<label> Patient's Birthday </label> <p id="DOBInvalid"></p>
+		<input type="date" name="bday" id="bday" onChange = "validateDOB()">
+		
+		<label> Trial Description </label> 
+		<input list="trials" name="trial" placeholder="Select from the drop down or insert a new trial">
+		<datalist id="trials">
+			<option value="Parkinsons_Trial">
+			<option value="POW_Hospital_Trial">
+			<option value="Multiple_Fallers_Trial">
+		</datalist>
+		
+		<label> Trial Date </label> <p id="TrialDateInvalid"></p>
+		<input type="date" name = "trialdate" id="trialdate" onChange = "validateTrialDate()">
+		<input type="submit" value="Add Patient Data"> <input type="reset">
+	
+	</form>
+	</div>
+	<!--End of form to add new patient --> 
+
+	</div>
+	
+	<div class = "footer">
+	<div class = "footertext"> Website created by Vivian Bakiris 2018 </div>
+	</div>
+	
+
+
+
+<?php
+
+if(!empty($_POST)){
+	//Get all the variables from the form 
+	$firstname = $_POST['uname'];
+	$lastname = $_POST['surname'];
+	$subjectid = $_POST['formID']; 
+	$bday = $_POST['bday']; 
+	$trial = $_POST['trial']; 
+	$trialdate = $_POST['trialdate'];
+	$sex = $_POST['sex'];
+	$falls = $_POST['trialdata']; 
+
+	$conn = odbc_connect('z5062431', '', '',SQL_CUR_USE_ODBC);
+		
+		
+	// Check connection
+	if(!$conn){
+		exit('Connection Failed:</br>');
+	}
+
+	//Step One: Check that the patient number doesn't already exist 
+	$checkPatientQuery = "SELECT * FROM Patient WHERE SubjectID =" .$subjectid . ";"; 
+
+	$stepone = odbc_exec($conn, $checkPatientQuery); 
+
+	$foundPatient = false; 
+
+	while(odbc_fetch_row($stepone)){
+
+	$foundPatient = true; 	
+	}
+
+
+	if ($foundPatient){
+		echo '<script type="text/javascript">',
+			 'jsfunction();',
+			 '</script>'
+		;	
+	}
+
+	else {
+		
+		//If the patient is in fact new insert them into the database
+
+
+		$insertPatient = "Insert INTO Patient (SubjectID,Sex,[DOB], FirstName, LastName) VALUES ('$subjectid','$sex', #$bday#, '$firstname', '$lastname');";
+
+		$steptwo = odbc_exec($conn, $insertPatient); 
+
+
+		//Then to add their trial data, check if the Trial combo already exists
+
+		$looktrial = "SELECT * FROM TrialTable"; 
+
+		$stepfour =odbc_exec($conn, $looktrial); 
+
+		$found = false; 
+		$trialID = "NA";
+
+		while(odbc_fetch_row($stepfour)){
+			
+			$currentDescription = odbc_result($stepfour, 'Description'); 
+			$currentDate = odbc_result($stepfour, 'TrialDate');
+
+			if($trial == $currentDescription){
+
+				$createDate = new DateTime($currentDate);
+
+				$strip = $createDate->format('Y-m-d');
+				if($trialdate == $strip){
+
+				$found = true; 
+				$trialID = odbc_result($stepfour, 'ID'); 
+				break;
+				}
+				
+			}
+		}
+		
+		//If the trialID doesn't already exist, add it. 
+		if($found == false){
+
+			$insertNewTrial = "Insert INTO TrialTable (Description, [TrialDate]) VALUES ('$trial',#$trialdate#);"; 
+			
+			$stepfourtwo = odbc_exec($conn, $insertNewTrial); 
+			
+			$getIDTrial = "SELECT @@IDENTITY;";
+
+			$giveTrial = odbc_exec($conn, $getIDTrial); 
+
+
+
+			while(odbc_fetch_row($giveTrial)){
+				
+				$trialID = odbc_result($giveTrial, 1);
+
+			}
+			
+		}
+
+
+		//Then insert the appropriate trial information
+		$insertTrial = "Insert INTO TrialData (PatientID, TrialID, TrialData) VALUES ('$subjectid', '$trialID', '$falls');"; 
+
+		$stepfive = odbc_exec($conn, $insertTrial); 
+
+		//Add into the patient practitioner database 
+
+		$practitionerID = $_SESSION['PractitionerID']; 
+
+		$insertPPQuery = "Insert INTO PractitionerPatients (PractitionerID, PatientID) VALUES ('$practitionerID','$subjectid');"; 
+
+		$step6 = odbc_exec($conn, $insertPPQuery); 
+
+
+		}
+}
+
+
+?>
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+<html> 
+<header> 
+
+<link rel = "stylesheet" type = "text/css" href = "theme.css">
+
+</header>
+
+<body> 
+<h1> <a href= "practice.html">Vivian's 9450 Study Notes </a></h1> 
+<h2> SQL Notes </h2> 
+
+<div class = "notice">
+The most important thing with SQL is <b>READ THE QUESTION.</b> Make sure you're doing the right thing. 
+</div>
+
+<h3> Question 1 </h3> 
+<div class = "codebox"> 
+<code>
+SELECT Customer.CustomerID, UCase(Customer.LastName) & ":" & Customer.FirstName AS Customer, Animal.AnimalID & "(" & Animal.Name & ")" AS Expr1
+FROM (Customer INNER JOIN Sale ON Customer.CustomerID = Sale.CustomerID) INNER JOIN (Animal INNER JOIN SaleAnimal ON Animal.AnimalID = SaleAnimal.AnimalID) ON Sale.SaleID = SaleAnimal.SaleID
+ORDER BY Customer.LastName, Customer.FirstName; </code>
+
+</div> 
+
+<h3> Question 2 </h3> 
+<div class = "codebox"> 
+<code>
+SELECT Employee.EmployeeID, Employee.FirstName, Employee.LastName, Sum(SaleItem.Quantity) AS SumOfQuantity
+FROM (Employee INNER JOIN Sale ON Employee.EmployeeID = Sale.EmployeeID) INNER JOIN (Merchandise INNER JOIN SaleItem ON Merchandise.ItemID = SaleItem.ItemID) ON Sale.SaleID = SaleItem.SaleID
+GROUP BY Employee.EmployeeID, Employee.FirstName, Employee.LastName
+ORDER BY Sum(SaleItem.Quantity) DESC; </code>
+
+</div> 
+
+<h3> Question 3.1 </h3> 
+<div class = "codebox"> 
+<code>
+SELECT TOP 1 Employee.EmployeeID, Employee.FirstName, Employee.LastName, Sum(SaleItem.Quantity) AS SumOfQuantity
+FROM (Employee INNER JOIN Sale ON Employee.EmployeeID = Sale.EmployeeID) INNER JOIN (Merchandise INNER JOIN SaleItem ON Merchandise.ItemID = SaleItem.ItemID) ON Sale.SaleID = SaleItem.SaleID
+GROUP BY Employee.EmployeeID, Employee.FirstName, Employee.LastName
+ORDER BY Sum(SaleItem.Quantity) DESC; </code>
+
+</div> 
+
+<h3> Question 3.2 </h3> 
+<div class = "codebox"> 
+<code>
+SELECT *
+FROM (SELECT Employee.EmployeeID, Employee.FirstName, Sum(SaleItem.Quantity) AS SumOfQuantity
+FROM (Employee INNER JOIN Sale ON Employee.EmployeeID = Sale.EmployeeID) INNER JOIN (Merchandise INNER JOIN SaleItem ON Merchandise.ItemID = SaleItem.ItemID) ON Sale.SaleID = SaleItem.SaleID
+GROUP BY Employee.EmployeeID, Employee.FirstName, Employee.LastName)  AS [%$##@_Alias]
+WHERE SumOfQuantity >= ALL
+(SELECT Sum(SaleItem.Quantity) AS SumOfQuantity
+FROM (Employee INNER JOIN Sale ON Employee.EmployeeID = Sale.EmployeeID) INNER JOIN (Merchandise INNER JOIN SaleItem ON Merchandise.ItemID = SaleItem.ItemID) ON Sale.SaleID = SaleItem.SaleID
+GROUP BY Employee.EmployeeID, Employee.FirstName, Employee.LastName);
+</code>
+
+</div> 
+
+<h3> Question 4 </h3> 
+<div class = "codebox"> 
+<code>
+SELECT COUNT(Animal.Category) AS Total_Dogs, COUNT(SaleAnimal.AnimalID) AS Sold_Dogs, COUNT(Animal.Category)-COUNT(SaleAnimal.AnimalID) AS Unsold_Dogs
+FROM Animal LEFT JOIN SaleAnimal ON Animal.AnimalID = SaleAnimal.AnimalID
+WHERE (((Animal.Category)="DOG"))
+GROUP BY Animal.Category;
+</code>
+</div> 
+
+
+<h3> Question 5 </h3> 
+<div class = "codebox"> 
+<code>
+SELECT EmployeeID, SUM(SaleItemEmployeeTotal) AS TotalSales
+FROM (SELECT Sale.EmployeeID, SUM(SaleItem.SalePrice) as SaleItemEmployeeTotal
+FROM Sale INNER JOIN SaleItem ON Sale.SaleID = SaleItem.SaleID GROUP BY Sale.EmployeeID
+UNION
+SELECT Sale.EmployeeID, SUM(SaleAnimal.SalePrice) as SaleAnimalEmployeeTotal
+FROM Sale INNER JOIN SaleAnimal ON Sale.SaleID = SaleAnimal.SaleID GROUP BY Sale.EmployeeID)  AS [%$##@_Alias]
+GROUP BY EmployeeID
+ORDER BY Sum(SaleItemEmployeeTotal) DESC;
+</code>
+</div> 
+
+
+
+</body>
+</html>

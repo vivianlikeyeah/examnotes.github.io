@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<?php
+session_start(); 
+
+//Unset all of the sessoin variables 
+
+session_unset(); 
+
+
+// destroy the session 
+session_destroy(); 
+
+//Go to the login page 
+header('Location: index.php'); 
+?>
+
+
+</body>
+</html>

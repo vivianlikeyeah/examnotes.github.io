@@ -1,0 +1,165 @@
+<!-- The following page is the home page for the BIOM9450 Tutorial 4 Task -->
+<!-- Written by z5062431 August 2018 --> 
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<title>A fictitious book </title>
+<body>
+
+	<!-- Header --> 
+
+	<div class="header">
+  	<a href="index.html" class="logo">Vivian's Scientific Book Publishing</a>
+  	<div class="header-right">
+    <a href="index.html">Home</a>
+    <a href="contact.html">Contact</a>
+    <a href="about.html">About</a>
+  	</div>
+	</div>
+
+	<!-- End Header-->
+	
+	<!-- Php code to display user details and validate human user --> 
+	<?php
+	
+	$conn = odbc_connect('z5062431', '', '',SQL_CUR_USE_ODBC);
+	
+	
+	// Check connection
+	if(!$conn){
+		exit('Connection Failed:</br>');
+	} else {
+
+	}
+	
+
+
+
+	//Variables are obtained for all required details 
+	$firstname = $_POST["firstName"];
+	$lastname = $_POST["lastName"];
+	$email = $_POST["email"]; 
+	$dob = $_POST["DOB"];
+	$password = $_POST["password"];
+	$marketing = $_POST["helloo"];
+	//If marketing does not return a full string, the user has not ticked a box, therefore the marketing = no. 
+	if ($marketing == ""){
+			$marketing = "No";
+	}	
+	$gender = $_POST["gender"];
+	// Setting variables isRobot and isDuplicate to a default of false. 
+	$isRobot = false; 
+	$isDuplicate = false; 
+	// A variable to indicate whether the users should be displayed
+	$displayUsers = false; 
+	//Substring containing the first four digits of the date (the year)
+	$newdob = substr($dob,0,4);
+
+	//Checking for instances of banned users. 
+	$sqlQuery = 'SELECT * FROM Registration WHERE banned = True;';
+	$registered = odbc_exec($conn, $sqlQuery);
+	//Looping through all banned users (robots) to see if they match our incoming user
+	while(odbc_fetch_row($registered)){
+		$robotFirst = odbc_result($registered,'firstName');
+		$robotLast = odbc_result($registered,'lastName');
+		$robotEmail = odbc_result($registered, 'email'); 
+		if (strtoupper($firstname) == strtoupper($robotFirst) && strtoupper($lastname) == strtoupper($robotLast)){
+			$isRobot = true; 
+		}
+		else if (strtoupper($email) == strtoupper($robotEmail)){
+				$isRobot = true; 
+				
+		}
+		
+		else{
+		}
+	}
+	//Checking for traditional definition of robot in all cases. 
+	if (preg_match('/robot/i',$firstname) || preg_match('/robot/i',$lastname) || preg_match('/robot/i',$email)){
+		$isRobot = true;
+	}
+	
+	//Checking the database for duplicate entries 
+	$sqlQuery = 'SELECT * FROM Registration;';
+	$registered = odbc_exec($conn, $sqlQuery);
+	while(odbc_fetch_row($registered)){
+		$robotFirst = odbc_result($registered,'firstName');
+		$robotLast = odbc_result($registered,'lastName');
+		$robotEmail = odbc_result($registered, 'email'); 
+		if (strtoupper($firstname) == strtoupper($robotFirst) && strtoupper($lastname) == strtoupper($robotLast)){
+			$isDuplicate = true; 
+		}
+		else if (strtoupper($email) == strtoupper($robotEmail)){
+				$isDuplicate = true; 
+		}
+		
+		else{
+
+		}
+	}
+
+	//Before registering user checks to see if there are a robot or a duplicate. Displays appropriate response for each. 
+	if ($isRobot){
+		echo 'You\'re a robot, denied!';
+	}
+
+	else if ($isDuplicate){
+			echo $firstname; 
+			echo " ";
+			echo $lastname;
+			echo ""; 
+			echo ', you already have an account!'; 
+			$displayUsers = true;
+	}	
+
+	//If the user is not a robot or a duplicate, their details are displayed and they are added
+	// to the database. 
+
+	else {
+		//Display user details 
+		echo '</br><b>Congratulations! Your registration is complete</b></br> ';
+		echo 'Details: </br>'; 
+		echo $firstname .' ' .$lastname . '</br>'; 
+		echo $email . ' '. '</br>'; 
+		echo "xx/xx/".$newdob;
+		 $dt = new DateTime();
+		 $today = $dt->format('Y-m-d');
+		//Add user to database 
+		$sqlInsert = "INSERT INTO Registration (email,firstName,lastName, password, gender, [DOB], marketingMaterial,registered) VALUES ('$email','$firstname','$lastname', '$password', '$gender', #$dob#,$marketing, #$today#);"; 
+		$wow = odbc_exec($conn,$sqlInsert);
+		$displayUsers = true; 
+	}
+	
+	if ($displayUsers == true) {
+	
+		//Execute a query to return a full list of all the registrants - does not include the robots
+		$sqlQuery = 'SELECT * FROM Registration WHERE banned = False;';
+		$registered = odbc_exec($conn,$sqlQuery);
+		echo '<b><br>Current Registrations </b> </br> ';
+		//If there are no users registered yet
+		if(!$registered){ 
+			exit('No users yet'); }
+		//Otherwise, loop through the returned result, printing the names of all registered users
+		else{
+			while(odbc_fetch_row($registered)){
+				echo odbc_result($registered,'firstName');
+				echo ' ';
+				echo odbc_result($registered, 'lastName');
+				echo ' '; 
+				echo odbc_result($registered,'email');
+				echo '</br>';
+			}
+		//End of loop through current registrants 
+			
+		}
+	}
+	
+	
+
+
+
+	?>
+
+</body>
+</html>
